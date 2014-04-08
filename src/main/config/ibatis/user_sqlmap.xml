@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="User">
+    <typeAlias alias="user"
+               type="com.cy.cms.model.User"/>
+    <resultMap id="userResult" class="user">
+        <result column="uid" property="uid" jdbcType="INTEGER"/>
+        <result column="useremail" property="useremail" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="admin" property="admin" jdbcType="INTEGER"/>
+
+    </resultMap>
+    <sql id="selectSql">
+            SELECT t.uid,t.useremail,t.password,t.admin FROM tb_user t
+    </sql>
+
+    <select id="userLogin" parameterClass="user" resultMap="User.userResult">
+        <include refid="selectSql"/>
+        WHERE t.useremail=#useremail# and t.password=#password#
+    </select>
+
+    <select id="getUser" parameterClass="int" resultMap="User.userResult">
+        <include refid="selectSql"/>
+        WHERE t.uid=#value#
+    </select>
+    <select id="getAll" resultMap="User.userResult">
+        <include refid="selectSql"/>
+    </select>
+
+    <insert id="insert" parameterClass="user">
+        <selectKey resultClass="int" type="post" keyProperty="uid">
+            select LAST_INSERT_ID() as value
+        </selectKey>
+      INSERT INTO tb_user (uid,useremail,password,admin) VALUES (#uid#,#useremail#,#password#,#admin#)
+     </insert>
+    <update id="updatePassword" parameterClass="user">
+           UPDATE tb_user  SET password =#password# WHERE uid=#uid#
+    </update>
+
+    <update id="updateAdmin" parameterClass="user">
+           UPDATE tb_user  SET useremail=#useremail#,password =#password#,admin =#admin# WHERE uid=#uid#
+    </update>
+
+    <delete id="delete" parameterClass="java.lang.Integer">
+         DELETE FROM  tb_user WHERE uid=#value#
+     </delete>
+
+</sqlMap>
